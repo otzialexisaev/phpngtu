@@ -6,7 +6,9 @@
  * Time: 23:05
  */
 
-include "Core.php";
-include "../designer/Designer.php";
+require_once "Core.php";
+require_once __DIR__. "/../designer/Designer.php";
 
 $core = new Core();
+$display = new Designer();
+$display->display();
