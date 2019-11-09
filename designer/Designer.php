@@ -11,6 +11,7 @@ class Designer
     public function display()
     {
 //        $html = file_get_contents(__DIR__.'\main.html');
+        $css = file_get_contents(__DIR__.'\main.css');
         $html = [];
         if ($fh = fopen(__DIR__.'\main.html', 'r')) {
             while (!feof($fh)) {
@@ -18,9 +19,26 @@ class Designer
             }
             fclose($fh);
         }
-
+//var_dump($css);
+// todo
+        $check = $this->parse($html, 'head');
+        foreach ($check as $item) {
+//            var_dump($item);
+            if (preg_match('/<!--placeholder-->/', $item)) {
+                echo $css;
+            }
+            echo $item;
+        }
+        $this->addCss($css);
         $this->displayMenu($html, ['asdasd', '123123']);
 //        var_dump($html);
+    }
+
+    public function addCss($css = array())
+    {
+        echo "<style>";
+        echo $css;
+        echo "</style>";
     }
 
     public function displayMenu($html = array(), $elements = array())
