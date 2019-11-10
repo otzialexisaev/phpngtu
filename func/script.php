@@ -11,4 +11,21 @@ require_once __DIR__. "/../designer/Designer.php";
 
 $core = new Core();
 $display = new Designer();
-$display->display();
+$html = $display->display();
+$check = 'blue';
+ob_start();
+foreach ($html as $row) {
+    echo $row;
+}
+//var_dump($html);
+//<!--    <html>-->
+//<!--    <head>-->
+//<!--        <style>-->
+//<!--        </style>-->
+//<!--    </head>-->
+//<!--    <body>-->
+//<!--    <p>It's like comparing apples to oranges.</p>-->
+//<!--    </body>-->
+//<!--    </html>-->
+
+ob_end_flush();

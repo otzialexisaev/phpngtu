@@ -11,9 +11,10 @@ class Designer
     public function display()
     {
 //        $html = file_get_contents(__DIR__.'\main.html');
-        $css = file_get_contents(__DIR__.'\main.css');
+        // получаем хтмльку для парсинга, если там будет не хтмлька то наверное наступит смерть
+        // парсинг точно полетит
         $html = [];
-        if ($fh = fopen(__DIR__.'\main.html', 'r')) {
+        if ($fh = fopen(__DIR__ . '\main.html', 'r')) {
             while (!feof($fh)) {
                 $html[] = fgets($fh);
             }
@@ -21,17 +22,50 @@ class Designer
         }
 //var_dump($css);
 // todo
-        $check = $this->parse($html, 'head');
-        foreach ($check as $item) {
+
+        $head = $this->getHead($html);
+        foreach ($head as $item) {
 //            var_dump($item);
-            if (preg_match('/<!--placeholder-->/', $item)) {
-                echo $css;
-            }
-            echo $item;
+//            if (preg_match('/<!--placeholder-->/', $item)) {
+//                echo $css;
+//            }
+//            echo $item;
         }
-        $this->addCss($css);
-        $this->displayMenu($html, ['asdasd', '123123']);
+//        $this->addCss($css);
+//        $this->displayMenu($html, ['asdasd', '123123']);
 //        var_dump($html);
+        return $head;
+    }
+
+    public function getHead($html = array())
+    {
+        $head = $this->parse($html, 'head');
+        $head = $this->addCssToHead($head);
+        return $head;
+    }
+
+    public function addCssToHead($html = array())
+    {
+        $css = [];
+        if ($fh = fopen(__DIR__ . '\main.css', 'r')) {
+            while (!feof($fh)) {
+                $css[] = fgets($fh);
+            }
+            fclose($fh);
+        }
+        $result = [];
+        foreach ($html as $htmlRow) {
+            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+                $result[] = '<style>';
+                foreach ($css as $cssRow) {
+                    $result[] = $cssRow;
+                }
+                $result[] = '</style>';
+            } else {
+                $result[] = $htmlRow;
+            }
+        }
+        return $result;
     }
 
     public function addCss($css = array())
@@ -53,7 +87,6 @@ class Designer
                 echo $item;
             }
         }
-
     }
 
     /**
@@ -65,11 +98,11 @@ class Designer
     {
         $ids = [];
         foreach ($html as $id => $row) {
-            if (preg_match('/<!--'.$tag.'-->/', $row)) {
+            if (preg_match('/<!--' . $tag . '-->/', $row)) {
                 $ids[] = $id;
             }
         }
-        $range = range($ids[0],$ids[1]);
+        $range = range($ids[0], $ids[1]);
         array_shift($range);
         array_pop($range);
 
@@ -90,4 +123,5 @@ class Designer
         }
         return false;
     }
+
 }

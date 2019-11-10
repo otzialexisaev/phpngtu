@@ -34,7 +34,7 @@ class Core
         //todo
         $folders[] = '../';
         foreach ($folders as $folder) {
-            echo "<a href='$folder'>$folder</a><br>";
+//            echo "<a href='$folder'>$folder</a><br>";
         }
 //        var_dump($folders);
 //        echo $this->root;
