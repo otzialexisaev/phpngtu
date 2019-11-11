@@ -8,6 +8,7 @@
 ini_set("xdebug.var_display_max_children", -1);
 ini_set("xdebug.var_display_max_data", -1);
 ini_set("xdebug.var_display_max_depth", -1);
+
 class Designer
 {
     protected $html = null;
@@ -34,8 +35,70 @@ class Designer
 
     public function getMainMenuContents($mainMenuItems = array())
     {
+//        var_dump($this->html);
         $mainMenuHtml = $this->parse($this->html, 'main');
+        $itemHtml = $this->parse($mainMenuHtml, "mainmenuitem");
+        $newItems = [];
+        foreach ($mainMenuItems as $item) {
+            $newItems[] = $this->switchPlaceholder($itemHtml, $item);
+        }
+//        $this->showArray($newItems);
+        $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
+        $this->showArray($mainMenuHtml);
+        $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);
+//        $this->showArray($itemHtml);
         return $mainMenuHtml;
+    }
+
+    public function switchPlaceholder($source, $items)
+    {
+        if (is_array($items)) {
+            return $this->switchPlaceholderArray($source, $items);
+        } else {
+            return $this->switchPlaceholderString($source, $items);
+        }
+    }
+
+    public function switchPlaceholderString($source = [], $items = "")
+    {
+        foreach ($source as &$htmlRow) {
+            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+                $htmlRow = $items;
+            }
+        }
+        return $source;
+    }
+
+    public function switchPlaceholderArray($source = [], $items = [])
+    {
+        $result = [];
+        foreach ($source as $htmlRow) {
+            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+                foreach ($items as $item) {
+                    $result[] = $item;
+                }
+            } else {
+                $result[] = $htmlRow;
+            }
+        }
+        return $result;
+    }
+
+    public function replaceBlockWithPlaceholder($source, $blockName)
+    {
+        $skip = false;
+        $result = [];
+        foreach ($source as $row) {
+            if ($skip && preg_match('/<!--' . $blockName . '-->/', $row)) {
+                $skip = false;
+                $result[] = '<!--placeholder-->';
+            } elseif (preg_match('/<!--' . $blockName . '-->/', $row)) {
+                $skip = true;
+            } else {
+                $result[] = $row;
+            }
+        }
+        return $result;
     }
 
     //    возвращает html между комментов head и втыкает css (исправить)
@@ -132,6 +195,21 @@ class Designer
             }
         }
         return false;
+    }
+
+    public function showArray($array = [])
+    {
+        echo "<pre>";
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                foreach ($item as $row) {
+                    print_r(htmlentities($row));
+                }
+            } else {
+                print_r(htmlentities($item));
+            }
+        }
+        echo "</pre>";
     }
 
 }

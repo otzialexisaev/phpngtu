@@ -16,12 +16,14 @@ $mainMenuItems = $core->getCurrentFolders();
 $display = new Designer();
 //$html = $display->display();
 $head = $display->getHeadContents();
+//var_dump($mainMenuItems);
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
 //$check = 'blue';
 ob_start();
 foreach ($head as $row) {
     echo $row;
 }
+$display->showArray($mainMenu);
 foreach ($mainMenu as $row) {
     echo $row;
 }
