@@ -44,8 +44,9 @@ class Designer
         }
 //        $this->showArray($newItems);
         $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
-        $this->showArray($mainMenuHtml);
+//        $this->showArray($mainMenuHtml);
         $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);
+//        var_dump($mainMenuHtml);
 //        $this->showArray($itemHtml);
         return $mainMenuHtml;
     }
@@ -69,13 +70,22 @@ class Designer
         return $source;
     }
 
+    /**
+     * $items - должны приходить как массив массивов.
+     *
+     * @param array $source
+     * @param array $items
+     * @return array
+     */
     public function switchPlaceholderArray($source = [], $items = [])
     {
         $result = [];
         foreach ($source as $htmlRow) {
             if (preg_match('/<!--placeholder-->/', $htmlRow)) {
                 foreach ($items as $item) {
-                    $result[] = $item;
+                    foreach ($item as $row) {
+                        $result[] = $row;
+                    }
                 }
             } else {
                 $result[] = $htmlRow;
@@ -89,9 +99,11 @@ class Designer
         $skip = false;
         $result = [];
         foreach ($source as $row) {
-            if ($skip && preg_match('/<!--' . $blockName . '-->/', $row)) {
-                $skip = false;
-                $result[] = '<!--placeholder-->';
+            if ($skip) {
+                if (preg_match('/<!--' . $blockName . '-->/', $row)) {
+                    $skip = false;
+                    $result[] = '<!--placeholder-->';
+                }
             } elseif (preg_match('/<!--' . $blockName . '-->/', $row)) {
                 $skip = true;
             } else {
@@ -107,8 +119,8 @@ class Designer
         $head = $this->parse($this->html, 'head');
 
         //        aasdasdasdadasdasdasd
-        foreach ($head as $htmlRow) {
-            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+//        foreach ($head as $htmlRow) {
+//            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
 //                $result[] = '<style>';
 //                foreach ($css as $cssRow) {
 //                    $result[] = $cssRow;
@@ -116,8 +128,8 @@ class Designer
 //                $result[] = '</style>';
 //            } else {
 //                $result[] = $htmlRow;
-            }
-        }
+//            }
+//        }
 //        aasdasdasdadasdasdasd
 
 
@@ -125,29 +137,29 @@ class Designer
         return $head;
     }
 
-    private function addCssToHead($html = array())
-    {
-        $css = [];
-        if ($fh = fopen(__DIR__ . '\main.css', 'r')) {
-            while (!feof($fh)) {
-                $css[] = fgets($fh);
-            }
-            fclose($fh);
-        }
-        $result = [];
-        foreach ($html as $htmlRow) {
-            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
-                $result[] = '<style>';
-                foreach ($css as $cssRow) {
-                    $result[] = $cssRow;
-                }
-                $result[] = '</style>';
-            } else {
-                $result[] = $htmlRow;
-            }
-        }
-        return $result;
-    }
+//    private function addCssToHead($html = array())
+//    {
+//        $css = [];
+//        if ($fh = fopen(__DIR__ . '\main.css', 'r')) {
+//            while (!feof($fh)) {
+//                $css[] = fgets($fh);
+//            }
+//            fclose($fh);
+//        }
+//        $result = [];
+//        foreach ($html as $htmlRow) {
+//            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+//                $result[] = '<style>';
+//                foreach ($css as $cssRow) {
+//                    $result[] = $cssRow;
+//                }
+//                $result[] = '</style>';
+//            } else {
+//                $result[] = $htmlRow;
+//            }
+//        }
+//        return $result;
+//    }
 
     public function displayMenu($html = array(), $elements = array())
     {

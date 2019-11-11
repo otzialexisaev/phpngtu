@@ -23,7 +23,7 @@ ob_start();
 foreach ($head as $row) {
     echo $row;
 }
-$display->showArray($mainMenu);
+//$display->showArray($mainMenu);
 foreach ($mainMenu as $row) {
     echo $row;
 }
