@@ -38,7 +38,13 @@ class Designer
         $itemHtml = $this->parse($mainMenuHtml, "mainmenuitem");
         $newItems = [];
         foreach ($mainMenuItems as $item) {
-            $newItems[] = $this->switchPlaceholder($itemHtml, $item);
+            $newItem = $this->switchPlaceholder($itemHtml, $item['rusName']);
+            foreach ($newItem as &$row) {
+                if (preg_match('/href/', $row)) {
+                    $row = str_replace('href', "href=\"/".$item['link']."\"", $row);
+                }
+            }
+            $newItems[] = $newItem;
         }
         $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
         $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);

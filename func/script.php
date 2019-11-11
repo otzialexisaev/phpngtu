@@ -12,7 +12,7 @@ require_once "Core.php";
 require_once __DIR__. "/../designer/Designer.php";
 
 $core = new Core();
-$mainMenuItems = $core->getCurrentFolders();
+$mainMenuItems = $core->getMainFolders(true);
 $display = new Designer();
 $head = $display->getHeadContents();
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
