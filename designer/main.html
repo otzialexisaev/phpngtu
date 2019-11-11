@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <!--placeholder-->
-    <!--<link href="./main.css" rel="stylesheet">-->
+    <link href="/designer/main.css" rel="stylesheet">
+    <!--<style>-->
+        <!--@import "./main.css";-->
+    <!--</style>-->
 </head>
 <!--head-->
 <!--top-->
@@ -20,15 +23,16 @@
 <img src="./logo.PNG">
 <!--logo-->
 <!--main-->
-<div id="main" class="navbar navbar-expand-lg navbar-light bg-light">
-    <!--mainitem-->
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-            <!--placeholder-->
-        </li>
-    </ul>
-    <!--mainitem-->
-</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="navbar-nav" style="flex-direction: row">
+        <!--mainmenuactiveitem-->
+        <a class="nav-item nav-link active" href="#">Главная <span class="sr-only">(current)</span></a>
+        <!--mainmenuactiveitem-->
+        <!--mainmenuitem-->
+        <a class="nav-item nav-link" href="#">Features</a>
+        <!--mainmenuitem-->
+    </div>
+</nav>
 <!--main-->
 <!--nav-->
 <div id="nav">
@@ -37,7 +41,7 @@
 <!--nav-->
 <!--current-->
 <div id="current">
-asdasdasdasds
+    asdasdasdasds
 </div>
 <!--current-->
 </html>

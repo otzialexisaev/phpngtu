@@ -5,12 +5,15 @@
  * Date: 07.11.2019
  * Time: 23:12
  */
-
+ini_set("xdebug.var_display_max_children", -1);
+ini_set("xdebug.var_display_max_data", -1);
+ini_set("xdebug.var_display_max_depth", -1);
 class Designer
 {
-    public function display()
+    protected $html = null;
+
+    public function __construct()
     {
-//        $html = file_get_contents(__DIR__.'\main.html');
         // получаем хтмльку для парсинга, если там будет не хтмлька то наверное наступит смерть
         // парсинг точно полетит
         $html = [];
@@ -20,31 +23,46 @@ class Designer
             }
             fclose($fh);
         }
-//var_dump($css);
-// todo
-
-        $head = $this->getHead($html);
-        foreach ($head as $item) {
-//            var_dump($item);
-//            if (preg_match('/<!--placeholder-->/', $item)) {
-//                echo $css;
-//            }
-//            echo $item;
-        }
-//        $this->addCss($css);
-//        $this->displayMenu($html, ['asdasd', '123123']);
-//        var_dump($html);
-        return $head;
+        $this->html = $html;
     }
 
-    public function getHead($html = array())
+    public function display()
     {
-        $head = $this->parse($html, 'head');
-        $head = $this->addCssToHead($head);
+        $head = $this->getHeadContents();
         return $head;
     }
 
-    public function addCssToHead($html = array())
+    public function getMainMenuContents($mainMenuItems = array())
+    {
+        $mainMenuHtml = $this->parse($this->html, 'main');
+        return $mainMenuHtml;
+    }
+
+    //    возвращает html между комментов head и втыкает css (исправить)
+    public function getHeadContents()
+    {
+        $head = $this->parse($this->html, 'head');
+
+        //        aasdasdasdadasdasdasd
+        foreach ($head as $htmlRow) {
+            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
+//                $result[] = '<style>';
+//                foreach ($css as $cssRow) {
+//                    $result[] = $cssRow;
+//                }
+//                $result[] = '</style>';
+//            } else {
+//                $result[] = $htmlRow;
+            }
+        }
+//        aasdasdasdadasdasdasd
+
+
+//        $head = $this->addCssToHead($head);
+        return $head;
+    }
+
+    private function addCssToHead($html = array())
     {
         $css = [];
         if ($fh = fopen(__DIR__ . '\main.css', 'r')) {
@@ -68,19 +86,11 @@ class Designer
         return $result;
     }
 
-    public function addCss($css = array())
-    {
-        echo "<style>";
-        echo $css;
-        echo "</style>";
-    }
-
     public function displayMenu($html = array(), $elements = array())
     {
         $menuitemHtml = $this->parse($html, 'mainitem');
         foreach ($elements as $element) {
             foreach ($menuitemHtml as $item) {
-//            var_dump($item);
                 if (preg_match('/<!--placeholder-->/', $item)) {
                     echo $element;
                 }

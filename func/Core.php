@@ -22,22 +22,24 @@ class Core
 //        echo "<a href='$this->root'>asadsad</a>";
 //        echo $this->cwd;
 //        echo substr(__DIR__, strlen($_SERVER['DOCUMENT_ROOT']));
+//        var_dump($folders);
+//        echo $this->root;
+//        echo $this->cwd;
+    }
 
-        //todo too
-        $folders = array_diff(scandir($this->cwd), array('..', '.'));
+    public function getCurrentFolders()
+    {
+        $folders = array_diff(scandir($this->root), array('..', '.'));
         foreach ($folders as $k => $folder) {
             if (!is_dir($folder) || in_array($folder, $this->folderCfg['hide'])) {
 //                echo $folder;
                 unset($folders[$k]);
             }
         }
-        //todo
         $folders[] = '../';
-        foreach ($folders as $folder) {
+//        foreach ($folders as $folder) {
 //            echo "<a href='$folder'>$folder</a><br>";
-        }
-//        var_dump($folders);
-//        echo $this->root;
-//        echo $this->cwd;
+//        }
+        return $folders;
     }
 }
