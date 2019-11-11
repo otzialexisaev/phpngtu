@@ -11,46 +11,48 @@ ini_set("xdebug.var_display_max_depth", -1);
 
 class Designer
 {
-    protected $html = null;
+    protected $html = [];
 
     public function __construct()
     {
         // получаем хтмльку для парсинга, если там будет не хтмлька то наверное наступит смерть
         // парсинг точно полетит
-        $html = [];
         if ($fh = fopen(__DIR__ . '\main.html', 'r')) {
             while (!feof($fh)) {
-                $html[] = fgets($fh);
+                $this->html[] = fgets($fh);
             }
             fclose($fh);
         }
-        $this->html = $html;
     }
 
-    public function display()
-    {
-        $head = $this->getHeadContents();
-        return $head;
-    }
-
+    /**
+     * Получаем собранную хтмл для главного меню. Передаем в нее массив с названиями папок.
+     * todo сделать ключи русскими названиями и подменять
+     *
+     * @param array $mainMenuItems
+     * @return array
+     */
     public function getMainMenuContents($mainMenuItems = array())
     {
-//        var_dump($this->html);
         $mainMenuHtml = $this->parse($this->html, 'main');
         $itemHtml = $this->parse($mainMenuHtml, "mainmenuitem");
         $newItems = [];
         foreach ($mainMenuItems as $item) {
             $newItems[] = $this->switchPlaceholder($itemHtml, $item);
         }
-//        $this->showArray($newItems);
         $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
-//        $this->showArray($mainMenuHtml);
         $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);
-//        var_dump($mainMenuHtml);
-//        $this->showArray($itemHtml);
         return $mainMenuHtml;
     }
 
+    /**
+     * Подмена плэйсхолдера на что то переданное, строку или массив.
+     * $source - эт массив с хтмлькой для выборки.
+     *
+     * @param array $source
+     * @param string|array $items
+     * @return array
+     */
     public function switchPlaceholder($source, $items)
     {
         if (is_array($items)) {
@@ -60,6 +62,13 @@ class Designer
         }
     }
 
+    /**
+     * Подмена плэйсхолдера на строку.
+     *
+     * @param array $source
+     * @param string $items
+     * @return array
+     */
     public function switchPlaceholderString($source = [], $items = "")
     {
         foreach ($source as &$htmlRow) {
@@ -71,6 +80,7 @@ class Designer
     }
 
     /**
+     * Подмена плэйсхолдера на массив.
      * $items - должны приходить как массив массивов.
      *
      * @param array $source
@@ -94,6 +104,14 @@ class Designer
         return $result;
     }
 
+    /**
+     * Убрать из массива с хтмл какой то блок ограниченный указанным комментарием,
+     * чтобы подменить его потом на что либо с switchPlaceholder().
+     *
+     * @param $source
+     * @param $blockName
+     * @return array
+     */
     public function replaceBlockWithPlaceholder($source, $blockName)
     {
         $skip = false;
@@ -113,68 +131,20 @@ class Designer
         return $result;
     }
 
-    //    возвращает html между комментов head и втыкает css (исправить)
+    /**
+     * Возвращает собранный head в виде массива.
+     *
+     * @return array
+     */
     public function getHeadContents()
     {
         $head = $this->parse($this->html, 'head');
-
-        //        aasdasdasdadasdasdasd
-//        foreach ($head as $htmlRow) {
-//            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
-//                $result[] = '<style>';
-//                foreach ($css as $cssRow) {
-//                    $result[] = $cssRow;
-//                }
-//                $result[] = '</style>';
-//            } else {
-//                $result[] = $htmlRow;
-//            }
-//        }
-//        aasdasdasdadasdasdasd
-
-
-//        $head = $this->addCssToHead($head);
         return $head;
     }
 
-//    private function addCssToHead($html = array())
-//    {
-//        $css = [];
-//        if ($fh = fopen(__DIR__ . '\main.css', 'r')) {
-//            while (!feof($fh)) {
-//                $css[] = fgets($fh);
-//            }
-//            fclose($fh);
-//        }
-//        $result = [];
-//        foreach ($html as $htmlRow) {
-//            if (preg_match('/<!--placeholder-->/', $htmlRow)) {
-//                $result[] = '<style>';
-//                foreach ($css as $cssRow) {
-//                    $result[] = $cssRow;
-//                }
-//                $result[] = '</style>';
-//            } else {
-//                $result[] = $htmlRow;
-//            }
-//        }
-//        return $result;
-//    }
-
-    public function displayMenu($html = array(), $elements = array())
-    {
-        $menuitemHtml = $this->parse($html, 'mainitem');
-        foreach ($elements as $element) {
-            foreach ($menuitemHtml as $item) {
-                if (preg_match('/<!--placeholder-->/', $item)) {
-                    echo $element;
-                }
-                echo $item;
-            }
-        }
-    }
-
     /**
+     * Возвращает из массива-выборки массив содержащий хтмл внутри указанного комментария.
+     *
      * @param array $html
      * @param string $tag
      * @return array
@@ -199,16 +169,11 @@ class Designer
         return $result;
     }
 
-    public function parsePlaceholder($html = array())
-    {
-        foreach ($html as $id => $row) {
-            if (preg_match('/<!--placeholder-->/', $row)) {
-                return $id;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Вспомогательная функция для отображения массивов.
+     *
+     * @param array $array
+     */
     public function showArray($array = [])
     {
         echo "<pre>";
