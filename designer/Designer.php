@@ -82,6 +82,12 @@ class Designer
         return $navMenuHtml;
     }
 
+    public function getCenterContents()
+    {
+        $centerHtml = $this->parse($this->html, 'center');
+        return $centerHtml;
+    }
+
     /**
      * Подмена плэйсхолдера на что то переданное, строку или массив.
      * $source - эт массив с хтмлькой для выборки.

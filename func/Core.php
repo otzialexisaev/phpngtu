@@ -23,9 +23,6 @@ class Core
         $this->folderCfg = (include $this->cfgPath . 'folders.php');
         $this->httpUri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . parse_url($_SERVER['HTTP_HOST'])['path'];
         $this->requestUri = parse_url($_SERVER['REQUEST_URI'])['path'];
-//        var_dump($parse);
-//        var_dump($this->requestUri);
-//        var_dump($this->httpUri);
     }
 
     public function getMainFolders()
@@ -40,15 +37,12 @@ class Core
             $checkFolder = scandir("$this->root/$folder");
             if (in_array($this->rusName, $checkFolder)) {
                 $folderRusName = file_get_contents("$this->root/$folder/$this->rusName");
-//                var_dump($folderRusName);
                 $folder = [
                     'rusName' => $folderRusName,
                     'link' => $this->httpUri."/".$folder
                 ];
             }
-//            var_dump($checkFolder);
         }
-//        var_dump($folders);
         return $folders;
     }
 
@@ -58,7 +52,7 @@ class Core
         $items = [
             [
                 'title' => 'Главная',
-                'link' => "/",
+                'link' => $this->httpUri."/",
             ]
         ];
         $link = [];
@@ -66,9 +60,14 @@ class Core
             $link[] = $item;
             $items[] = [
                 'title' => $item,
-                'link' => "/".implode("/", $link),
+                'link' => $this->httpUri."/".implode("/", $link),
             ];
         }
         return $items;
+    }
+
+    public function getCurrentFolders()
+    {
+
     }
 }
