@@ -27,7 +27,6 @@ class Designer
 
     /**
      * Получаем собранную хтмл для главного меню. Передаем в нее массив с названиями папок.
-     * todo сделать ключи русскими названиями и подменять
      *
      * @param array $mainMenuItems
      * @return array
@@ -41,7 +40,7 @@ class Designer
             $newItem = $this->switchPlaceholder($itemHtml, $item['rusName']);
             foreach ($newItem as &$row) {
                 if (preg_match('/href/', $row)) {
-                    $row = str_replace('href', "href=\"/".$item['link']."\"", $row);
+                    $row = str_replace('href', "href=\"".$item['link']."\"", $row);
                 }
             }
             $newItems[] = $newItem;

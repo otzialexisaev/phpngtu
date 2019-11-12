@@ -12,6 +12,8 @@ class Core
     private $cwd = null;
     private $cfgPath = __DIR__ . '/configs/';
     private $folderCfg = null;
+    private $requestUri = null;
+    private $httpUri = null;
     private $rusName = 'rusName.txt';
 
     public function __construct()
@@ -19,13 +21,18 @@ class Core
         $this->root = __DIR__ . '\..\\';
         $this->cwd = getcwd();
         $this->folderCfg = (include $this->cfgPath . 'folders.php');
+        $this->requestUri = parse_url($_SERVER['REQUEST_URI'])['path'];
+        $this->httpUri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . parse_url($_SERVER['HTTP_HOST'])['path'];
+//        var_dump($parse);
+//        var_dump($this->requestUri);
+//        var_dump($this->httpUri);
     }
 
     public function getMainFolders($main = false)
     {
         $folders = array_diff(scandir($this->root), array('..', '.'));
         foreach ($folders as $k => $folder) {
-            if (!is_dir($folder) || in_array($folder, $this->folderCfg['hide'])) {
+            if (!is_dir($this->root."/".$folder) || in_array($folder, $this->folderCfg['hide'])) {
                 unset($folders[$k]);
             }
         }
@@ -36,7 +43,7 @@ class Core
 //                var_dump($folderRusName);
                 $folder = [
                     'rusName' => $folderRusName,
-                    'link' => $folder
+                    'link' => $this->httpUri."/".$folder
                 ];
             }
 //            var_dump($checkFolder);
