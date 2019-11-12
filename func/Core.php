@@ -55,7 +55,12 @@ class Core
     public function getNavFolders()
     {
         $itemsRaw = array_filter(explode('/',$this->requestUri));
-        $items = [];
+        $items = [
+            [
+                'title' => 'Главная',
+                'link' => "/",
+            ]
+        ];
         $link = [];
         foreach ($itemsRaw as $item) {
             $link[] = $item;
