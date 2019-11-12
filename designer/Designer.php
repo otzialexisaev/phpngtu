@@ -26,6 +26,17 @@ class Designer
     }
 
     /**
+     * Возвращает собранный head в виде массива.
+     *
+     * @return array
+     */
+    public function getHeadContents()
+    {
+        $head = $this->parse($this->html, 'head');
+        return $head;
+    }
+
+    /**
      * Получаем собранную хтмл для главного меню. Передаем в нее массив с названиями папок.
      *
      * @param array $mainMenuItems
@@ -48,6 +59,27 @@ class Designer
         $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
         $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);
         return $mainMenuHtml;
+    }
+
+    public function getNavContents($navItems)
+    {
+        $navMenuHtml = $this->parse($this->html, 'nav');
+        $navMenuItemHtml = $this->parse($this->html, 'navitem');
+        $newItems = [];
+        foreach ($navItems as $item) {
+            $newItem = $this->switchPlaceholder($navMenuItemHtml, $item['title']);
+            foreach ($newItem as &$row) {
+                if (preg_match('/href/', $row)) {
+                    $row = str_replace('href', "href=\"".$item['link']."\"", $row);
+                }
+            }
+            $newItems[] = $newItem;
+        }
+        $navMenuHtml = $this->replaceBlockWithPlaceholder($navMenuHtml, 'navitem');
+        $navMenuHtml = $this->switchPlaceholder($navMenuHtml, $newItems);
+
+//        var_dump($navMenuHtml);
+        return $navMenuHtml;
     }
 
     /**
@@ -134,17 +166,6 @@ class Designer
             }
         }
         return $result;
-    }
-
-    /**
-     * Возвращает собранный head в виде массива.
-     *
-     * @return array
-     */
-    public function getHeadContents()
-    {
-        $head = $this->parse($this->html, 'head');
-        return $head;
     }
 
     /**

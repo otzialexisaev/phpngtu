@@ -21,14 +21,14 @@ class Core
         $this->root = __DIR__ . '\..\\';
         $this->cwd = getcwd();
         $this->folderCfg = (include $this->cfgPath . 'folders.php');
-        $this->requestUri = parse_url($_SERVER['REQUEST_URI'])['path'];
         $this->httpUri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . parse_url($_SERVER['HTTP_HOST'])['path'];
+        $this->requestUri = parse_url($_SERVER['REQUEST_URI'])['path'];
 //        var_dump($parse);
 //        var_dump($this->requestUri);
 //        var_dump($this->httpUri);
     }
 
-    public function getMainFolders($main = false)
+    public function getMainFolders()
     {
         $folders = array_diff(scandir($this->root), array('..', '.'));
         foreach ($folders as $k => $folder) {
@@ -49,12 +49,21 @@ class Core
 //            var_dump($checkFolder);
         }
 //        var_dump($folders);
-        if (!$main) {
-            $folders[] = [
-                'rusName' => 'Назад',
-                'link' => '../'
+        return $folders;
+    }
+
+    public function getNavFolders()
+    {
+        $itemsRaw = array_filter(explode('/',$this->requestUri));
+        $items = [];
+        $link = [];
+        foreach ($itemsRaw as $item) {
+            $link[] = $item;
+            $items[] = [
+                'title' => $item,
+                'link' => "/".implode("/", $link),
             ];
         }
-        return $folders;
+        return $items;
     }
 }
