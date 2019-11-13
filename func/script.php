@@ -16,6 +16,8 @@ $display = new Designer();
 ////////////////////////////////////////////////////////////////////
 $mainMenuItems = $core->getMainFolders();
 $navMenuItems = $core->getNavFolders();
+$currentMenuItems = $core->getCurrentFolders();
+var_dump($currentMenuItems);
 ////////////////////////////////////////////////////////////////////
 $head = $display->getHeadContents();
 $mainMenu = $display->getMainMenuContents($mainMenuItems);

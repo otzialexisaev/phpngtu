@@ -1,4 +1,4 @@
 <?php
 return [
-    'hide' => ['.git', '.idea', 'designer', 'func']
+    'hide' => ['.git', '.idea', 'designer', 'func', '..', '.']
 ];
