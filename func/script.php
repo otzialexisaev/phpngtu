@@ -17,11 +17,12 @@ $display = new Designer();
 $mainMenuItems = $core->getMainFolders();
 $navMenuItems = $core->getNavFolders();
 $currentMenuItems = $core->getCurrentFolders();
+$contentItem = $core->getContent();
 ////////////////////////////////////////////////////////////////////
 $head = $display->getHeadContents();
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
 $navMenu = $display->getNavContents($navMenuItems);
-$center = $display->getCenterContents($currentMenuItems);
+$center = $display->getCenterContents($currentMenuItems, $contentItem);
 ////////////////////////////////////////////////////////////////////
 ob_start();
 foreach ($head as $row) {
@@ -34,8 +35,10 @@ foreach ($navMenu as $row) {
     echo $row;
 }
 foreach ($center as $row) {
+//    var_dump($row);
     echo $row;
 }
+//var_dump($center);
 //var_dump($html);
 //<!--    <html>-->
 //<!--    <head>-->

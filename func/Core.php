@@ -15,6 +15,7 @@ class Core
     private $requestUri = null;
     private $httpUri = null;
     private $rusName = 'rusName.txt';
+    private $contentName = 'content.html';
 
     public function __construct()
     {
@@ -72,12 +73,28 @@ class Core
 //            var_dump($folderRusName);
             $folder = [
                 'rusName' => $folderRusName,
-                'link' => $this->requestUri.$folder,
+                'link' => $this->requestUri . $folder,
             ];
 //            var_dump($folder);
 //            var_dump(scandir($this->root . $this->requestUri . $folder));
         }
+        if ($this->requestUri != '/')
+            $folders = array_merge([['rusName' => "Назад", 'link' => '/..']], $folders);
         return $folders;
+    }
+
+    public function getContent()
+    {
+        $check = [];
+        if (file_exists($this->root . $this->requestUri . $this->contentName)) {
+            if ($fh = fopen($this->root . $this->requestUri . $this->contentName, 'r')) {
+                while (!feof($fh)) {
+                    $check[] = fgets($fh);
+                }
+                fclose($fh);
+            }
+        }
+        return $check;
     }
 
     public function clearFolders($folders, $request = false)

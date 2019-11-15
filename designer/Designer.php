@@ -95,7 +95,11 @@ class Designer
         }
         $menuBlock = $this->fillBlockWithItems($menuBlock, 'currentitem', $items);
         $centerHtml = $this->fillBlockWithItems($centerHtml, 'current', [$menuBlock]);
-//        $this->showArray($centerHtml);
+        if (!empty($content)) {
+            $contentBlock = $this->parse($this->html, 'content');
+            $contentBlock = $this->switchPlaceholder($contentBlock, [$content]);
+            $centerHtml = $this->fillBlockWithItems($centerHtml, 'content', [$contentBlock]);
+        }
         return $centerHtml;
     }
 
@@ -156,16 +160,21 @@ class Designer
      * @param array $items
      * @return array
      */
-    public function _switchPlaceholderArray($source = [], $items = [])
+    public function _switchPlaceholderArray($source = [], $items = [], $once = true)
     {
         $result = [];
+        $check = true;
         foreach ($source as $htmlRow) {
             if (preg_match('/<!--placeholder-->/', $htmlRow)) {
-                foreach ($items as $item) {
-                    foreach ($item as $row) {
-                        $result[] = $row;
+                if ($once && $check) {
+                    foreach ($items as $item) {
+                        foreach ($item as $row) {
+                            $result[] = $row;
+                        }
                     }
                 }
+                if ($once)
+                    $check = false;
             } else {
                 $result[] = $htmlRow;
             }
