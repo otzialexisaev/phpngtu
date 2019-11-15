@@ -56,8 +56,7 @@ class Designer
             }
             $newItems[] = $newItem;
         }
-        $mainMenuHtml = $this->replaceBlockWithPlaceholder($mainMenuHtml, 'mainmenuitem');
-        $mainMenuHtml = $this->switchPlaceholder($mainMenuHtml, $newItems);
+        $mainMenuHtml = $this->fillBlockWithItems($mainMenuHtml, 'mainmenuitem', $newItems);
         return $mainMenuHtml;
     }
 
@@ -75,17 +74,44 @@ class Designer
             }
             $newItems[] = $newItem;
         }
-        $navMenuHtml = $this->replaceBlockWithPlaceholder($navMenuHtml, 'navitem');
-        $navMenuHtml = $this->switchPlaceholder($navMenuHtml, $newItems);
-
-//        var_dump($navMenuHtml);
+        $navMenuHtml = $this->fillBlockWithItems($navMenuHtml, 'navitem', $newItems);
         return $navMenuHtml;
     }
 
-    public function getCenterContents()
+    public function getCenterContents($menuItems, $content = [])
     {
         $centerHtml = $this->parse($this->html, 'center');
+        $menuBlock = $this->parse($centerHtml, 'current');
+        $menuItemBlock = $this->parse($menuBlock, 'currentitem');
+        $items = [];
+        foreach ($menuItems as $item) {
+            $temp = $this->switchPlaceholder($menuItemBlock, $item['rusName']);
+            foreach ($temp as &$row) {
+                if (preg_match('/href/', $row)) {
+                    $row = str_replace('href', "href=\"".$item['link']."\"", $row);
+                }
+            }
+            $items[] = $temp;
+        }
+        $menuBlock = $this->fillBlockWithItems($menuBlock, 'currentitem', $items);
+        $centerHtml = $this->fillBlockWithItems($centerHtml, 'current', [$menuBlock]);
+//        $this->showArray($centerHtml);
         return $centerHtml;
+    }
+
+    /**
+     * Лень две строки писать каждый раз.
+     *
+     * @param $source
+     * @param $blockName
+     * @param $items
+     * @return array
+     */
+    public function fillBlockWithItems($source, $blockName, $items)
+    {
+        $result = $this->replaceBlockWithPlaceholder($source, $blockName);
+        $result = $this->switchPlaceholder($result, $items);
+        return $result;
     }
 
     /**
@@ -99,9 +125,9 @@ class Designer
     public function switchPlaceholder($source, $items)
     {
         if (is_array($items)) {
-            return $this->switchPlaceholderArray($source, $items);
+            return $this->_switchPlaceholderArray($source, $items);
         } else {
-            return $this->switchPlaceholderString($source, $items);
+            return $this->_switchPlaceholderString($source, $items);
         }
     }
 
@@ -112,7 +138,7 @@ class Designer
      * @param string $items
      * @return array
      */
-    public function switchPlaceholderString($source = [], $items = "")
+    public function _switchPlaceholderString($source = [], $items = "")
     {
         foreach ($source as &$htmlRow) {
             if (preg_match('/<!--placeholder-->/', $htmlRow)) {
@@ -130,7 +156,7 @@ class Designer
      * @param array $items
      * @return array
      */
-    public function switchPlaceholderArray($source = [], $items = [])
+    public function _switchPlaceholderArray($source = [], $items = [])
     {
         $result = [];
         foreach ($source as $htmlRow) {

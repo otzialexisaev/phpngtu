@@ -8,17 +8,31 @@
     padding-right: .5rem !important;
     padding-left: .5rem !important;
 }
+
 .center {
     width: 100%;
     display: flex;
     flex-direction: row;
 }
+
 .left {
     border: 1px solid black;
     flex: 1;
 }
-.content{
+
+.content {
     flex: 3;
     border: 1px solid red;
+}
+
+.current-menu-item {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid black;
+    background-color: pink;
+    transition-duration: .5s;
+}
+.current-menu-item:hover {
+    background-color: darkmagenta;
 }
 /*# sourceMappingURL=bootstrap.min.css.map */

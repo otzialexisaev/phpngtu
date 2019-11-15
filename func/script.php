@@ -17,12 +17,11 @@ $display = new Designer();
 $mainMenuItems = $core->getMainFolders();
 $navMenuItems = $core->getNavFolders();
 $currentMenuItems = $core->getCurrentFolders();
-var_dump($currentMenuItems);
 ////////////////////////////////////////////////////////////////////
 $head = $display->getHeadContents();
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
 $navMenu = $display->getNavContents($navMenuItems);
-$center = $display->getCenterContents();
+$center = $display->getCenterContents($currentMenuItems);
 ////////////////////////////////////////////////////////////////////
 ob_start();
 foreach ($head as $row) {
