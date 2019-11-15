@@ -67,19 +67,18 @@ class Core
     {
         $folders = scandir($this->root . $this->requestUri);
         $folders = $this->clearFolders($folders, true);
+        $uri = array_filter(explode('/', $this->requestUri));
+        array_pop($uri);
+        $uri = implode('/', $uri);
         foreach ($folders as &$folder) {
             $folderRusName = file_get_contents($this->root . $this->requestUri . $folder . '/' . $this->rusName);
-//            var_dump($this->root . $this->requestUri . $folder . '/' . $this->rusName);
-//            var_dump($folderRusName);
             $folder = [
                 'rusName' => $folderRusName,
-                'link' => $this->requestUri . $folder,
+                'link' => $this->httpUri . $this->requestUri . $folder,
             ];
-//            var_dump($folder);
-//            var_dump(scandir($this->root . $this->requestUri . $folder));
         }
         if ($this->requestUri != '/')
-            $folders = array_merge([['rusName' => "Назад", 'link' => '/..']], $folders);
+            $folders = array_merge([['rusName' => "Назад", 'link' => $this->httpUri.'/'.$uri]], $folders);
         return $folders;
     }
 
