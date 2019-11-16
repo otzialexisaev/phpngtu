@@ -25,6 +25,13 @@ class Designer
         }
     }
 
+    public function getLogoContents()
+    {
+//        src=["|'](.*?)["|']
+        $logoBlock = $this->parse($this->html, 'logo');
+        return $logoBlock;
+    }
+
     /**
      * Возвращает собранный head в виде массива.
      *
