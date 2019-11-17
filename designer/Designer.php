@@ -25,10 +25,20 @@ class Designer
         }
     }
 
-    public function getLogoContents()
+    public function getLogoContents($path)
     {
 //        src=["|'](.*?)["|']
         $logoBlock = $this->parse($this->html, 'logo');
+        $imgName = '';
+        foreach ($logoBlock as &$row) {
+            preg_match('%src=["|\'](.*?)["|\']%', $row, $check);
+            if (!empty($check) && isset($check[1])) {
+                $imgName = $check[1];
+                $row = str_replace($imgName, '/designer/'.$imgName, $row);
+                break;
+            }
+        }
+//        var_dump($imgName);
         return $logoBlock;
     }
 

@@ -8,22 +8,37 @@
 
 class Core
 {
-    private $root = null;
+    public $root = null;
     private $cwd = null;
     private $cfgPath = __DIR__ . '/configs/';
+    public $designerPath = __DIR__ . '/../designer';
     private $folderCfg = null;
-    private $requestUri = null;
-    private $httpUri = null;
+    public $requestUri = null;
+    public $httpUri = null;
     private $rusName = 'rusName.txt';
     private $contentName = 'content.html';
 
     public function __construct()
     {
+//        var_dump(DIRECTORY_SEPARATOR);
+//        var_dump(DIR_BASE);
+//        var_dump($_SERVER['DOCUMENT_ROOT']);
+//        var_dump(dirname(__FILE__));
+//        var_dump(__DIR__.'/..');
         $this->root = __DIR__ . '/..';
         $this->cwd = getcwd();
         $this->folderCfg = (include $this->cfgPath . 'folders.php');
         $this->httpUri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . parse_url($_SERVER['HTTP_HOST'])['path'];
         $this->requestUri = parse_url($_SERVER['REQUEST_URI'])['path'];
+//        $output = preg_split( '@[/|\\]@', $_SERVER['DOCUMENT_ROOT'] );
+//        print_r($_SERVER);
+//        var_dump($output);
+    }
+
+    public function getImgPath()
+    {
+//        $output = preg_split( '@[/|\\]@', $_SERVER['DOCUMENT_ROOT'] );
+
     }
 
     public function getMainFolders()

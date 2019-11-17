@@ -19,7 +19,7 @@ $navMenuItems = $core->getNavFolders();
 $currentMenuItems = $core->getCurrentFolders();
 $contentItem = $core->getContent();
 ////////////////////////////////////////////////////////////////////
-$logoItem = $display->getLogoContents();
+$logoItem = $display->getLogoContents($core->httpUri);
 $head = $display->getHeadContents();
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
 $navMenu = $display->getNavContents($navMenuItems);

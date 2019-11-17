@@ -4,9 +4,9 @@
     <list default="true" id="3be133ac-26db-4cbc-b2c7-59367845967e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/designer/Designer.php" beforeDir="false" afterPath="$PROJECT_DIR$/designer/Designer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/designer/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/designer/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/designer/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/designer/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/func/Core.php" beforeDir="false" afterPath="$PROJECT_DIR$/func/Core.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/func/script.php" beforeDir="false" afterPath="$PROJECT_DIR$/func/script.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/news/rusName.txt" beforeDir="false" afterPath="$PROJECT_DIR$/news/rusName2.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,12 +28,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 7.2" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="279" />
-    <option name="y" value="-19" />
-    <option name="width" value="683" />
-    <option name="height" value="768" />
-  </component>
   <component name="ProjectId" id="1TTY01dO7nwAcmDClcM6O6iimkI" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
@@ -89,6 +83,8 @@
       <workItem from="1573581720020" duration="8050000" />
       <workItem from="1573668498156" duration="4660000" />
       <workItem from="1573758373072" duration="1764000" />
+      <workItem from="1573989907281" duration="1350000" />
+      <workItem from="1574013139546" duration="7032000" />
     </task>
     <task id="LOCAL-00001" summary="start">
       <created>1573303708255</created>
