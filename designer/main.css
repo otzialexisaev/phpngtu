@@ -35,4 +35,9 @@
 .current-menu-item:hover {
     background-color: darkmagenta;
 }
+
+body {
+    max-width: 1200px !important;
+    margin: auto !important;
+}
 /*# sourceMappingURL=bootstrap.min.css.map */
