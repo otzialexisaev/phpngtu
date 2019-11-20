@@ -49,7 +49,7 @@ class Core
         $items = [
             [
                 'title' => 'Главная',
-                'link' => $this->httpUri . "/",
+                'link' => $this->httpUri,
             ]
         ];
         $link = [];
@@ -65,20 +65,24 @@ class Core
 
     public function getCurrentFolders()
     {
-        $folders = scandir($this->root . $this->requestUri);
-        $folders = $this->clearFolders($folders, true);
+        $scanFolders = scandir($this->root . $this->requestUri);
+        $scanFolders = $this->clearFolders($scanFolders, true);
         $uri = array_filter(explode('/', $this->requestUri));
         array_pop($uri);
         $uri = implode('/', $uri);
-        foreach ($folders as &$folder) {
+        $folders = [];
+        foreach ($scanFolders as $folder) {
+            if (!$this->checkSubDir($this->root . $this->requestUri . $folder . '/')) {
+                continue;
+            }
             $folderRusName = file_get_contents($this->root . $this->requestUri . $folder . '/' . $this->rusName);
-            $folder = [
+            $folders[] = [
                 'rusName' => $folderRusName,
                 'link' => $this->httpUri . $this->requestUri . $folder,
             ];
         }
         if ($this->requestUri != '/')
-            $folders = array_merge([['rusName' => "Назад", 'link' => $this->httpUri.'/'.$uri]], $folders);
+            $folders = array_merge([['rusName' => "Назад", 'link' => $this->httpUri . '/' . $uri]], $folders);
         return $folders;
     }
 
@@ -106,5 +110,22 @@ class Core
             }
         }
         return $folders;
+    }
+
+    /**
+     * Чекает надо ли оторажать папку в меню слева.
+     * Если в ней нет подпапок либо не содержит контента - ответ false.
+     *
+     * @param $path
+     * @return bool
+     */
+    public function checkSubDir($path)
+    {
+        $toDelete = ['..', '.', $this->contentName, $this->rusName, 'index.php'];
+        $items = scandir($path);
+        $subFolders = array_diff($items, $toDelete);
+        if (empty($subFolders) && !file_exists($path.$this->contentName))
+            return false;
+        return true;
     }
 }
