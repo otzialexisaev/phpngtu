@@ -69,6 +69,9 @@ class Core
         ];
         $link = [];
         foreach ($itemsRaw as $item) {
+            var_dump($this->root);
+            var_dump($this->getRusName($this->root));
+            var_dump($item);
             $link[] = $item;
             $items[] = [
                 'title' => $item,
@@ -76,6 +79,19 @@ class Core
             ];
         }
         return $items;
+    }
+
+    /**
+     * Возвращает русское название из переданного пути.
+     *
+     * @param $path
+     * @return bool
+     */
+    public function getRusName($path)
+    {
+        if (!is_dir($path))
+            return nsull;
+        return true;
     }
 
     public function getCurrentFolders()
@@ -87,9 +103,9 @@ class Core
         $uri = implode('/', $uri);
         $folders = [];
         foreach ($scanFolders as $folder) {
-            if (!$this->checkSubDir($this->root . $this->requestUri . $folder . '/')) {
+            if (!$this->checkSubDir($this->root . $this->requestUri . $folder . '/'))
                 continue;
-            }
+
             $folderRusName = file_get_contents($this->root . $this->requestUri . $folder . '/' . $this->rusName);
             $folders[] = [
                 'rusName' => $folderRusName,
@@ -129,23 +145,30 @@ class Core
 
     /**
      * Чекает надо ли оторажать папку в меню слева.
-     * Если в ней нет подпапок либо не содержит контента - ответ false.
-     *
-     * Итак проблема сейчас в том что если в папке есть подпапка, то папка отобразится в меню. Однако то, что подпапка
-     * может быть пустой, и тогда при открытии папки подпапка не будет отображаться в меню, не учитывается. При этом
-     * будет выглядеть будто в папке что то есть, но при переходе текущее меню будет пустым, а также возможно и
-     * панель контента.
+     * Если переданная директория или ее поддиректории не содержат
+     * контента - ответ false.
      *
      * @param $path
      * @return bool
      */
     public function checkSubDir($path)
     {
-        $toDelete = ['..', '.', $this->contentName, $this->rusName, 'index.php'];
+        $toDelete = ['..', '.',
+            $this->rusName, 'index.php'];
         $items = scandir($path);
         $subFolders = array_diff($items, $toDelete);
-        if (empty($subFolders) && !file_exists($path.$this->contentName))
-            return false;
-        return true;
+        if (in_array($this->contentName, $items)) {
+            return true;
+        } else {
+            foreach ($subFolders as $folder) {
+                if ($this->checkSubDir($path . $folder)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+//        if (empty($subFolders) && !file_exists($path.$this->contentName))
+//            return false;
+//        return true;
     }
 }
