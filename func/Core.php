@@ -35,10 +35,10 @@ class Core
 //        var_dump($output);
     }
 
-    public function getImgPath()
+    public function getCurrentPageRusName()
     {
-//        $output = preg_split( '@[/|\\]@', $_SERVER['DOCUMENT_ROOT'] );
-
+        $name = $this->getRusName($this->root.$this->requestUri);
+        return $name;
     }
 
     public function getMainFolders()
@@ -69,12 +69,9 @@ class Core
         ];
         $link = [];
         foreach ($itemsRaw as $item) {
-            var_dump($this->root);
-            var_dump($this->getRusName($this->root));
-            var_dump($item);
             $link[] = $item;
             $items[] = [
-                'title' => $item,
+                'title' => $this->getRusName($this->root.'/'.implode('/',$link).'/'),
                 'link' => $this->httpUri . "/" . implode("/", $link),
             ];
         }
@@ -85,13 +82,19 @@ class Core
      * Возвращает русское название из переданного пути.
      *
      * @param $path
-     * @return bool
+     * @return bool|false|string
      */
     public function getRusName($path)
     {
         if (!is_dir($path))
-            return nsull;
-        return true;
+            return "Без названия";
+        $rusName = false;
+        if (file_exists($path . $this->rusName))
+            $rusName = file_get_contents($path . $this->rusName);
+        if ($rusName === false) {
+            return "Без названия";
+        }
+        return $rusName;
     }
 
     public function getCurrentFolders()

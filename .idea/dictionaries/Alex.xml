@@ -2,6 +2,7 @@
   <dictionary name="Alex">
     <words>
       <w>navitem</w>
+      <w>pagename</w>
     </words>
   </dictionary>
 </component>

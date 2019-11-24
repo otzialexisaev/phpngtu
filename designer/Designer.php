@@ -25,11 +25,10 @@ class Designer
         }
     }
 
-    public function getLogoContents($path)
+    public function getLogoContents()
     {
 //        src=["|'](.*?)["|']
         $logoBlock = $this->parse($this->html, 'logo');
-        $imgName = '';
         foreach ($logoBlock as &$row) {
             preg_match('%src=["|\'](.*?)["|\']%', $row, $check);
             if (!empty($check) && isset($check[1])) {
@@ -38,18 +37,21 @@ class Designer
                 break;
             }
         }
-//        var_dump($imgName);
         return $logoBlock;
     }
 
     /**
      * Возвращает собранный head в виде массива.
      *
+     * @param $pagename
      * @return array
      */
-    public function getHeadContents()
+    public function getHeadContents($pagename)
     {
         $head = $this->parse($this->html, 'head');
+        $titleHtml = $this->parse($head, 'title');
+        $titleHtml = $this->switchPlaceholder($titleHtml, $pagename);
+        $head = $this->fillBlockWithItems($head, 'title', [$titleHtml]);
         return $head;
     }
 
@@ -77,11 +79,14 @@ class Designer
         return $mainMenuHtml;
     }
 
-    public function getNavContents($navItems)
+    public function getNavContents($navItems, $pagename)
     {
         $navMenuHtml = $this->parse($this->html, 'nav');
         $navMenuItemHtml = $this->parse($this->html, 'navitem');
         $newItems = [];
+        $pageNameItem = $this->parse($navMenuHtml, 'pagename');
+        $pageNameItem = $this->switchPlaceholder($pageNameItem, $pagename);
+        $navMenuHtml = $this->fillBlockWithItems($navMenuHtml, 'pagename', [$pageNameItem]);
         foreach ($navItems as $item) {
             $newItem = $this->switchPlaceholder($navMenuItemHtml, $item['title']);
             foreach ($newItem as &$row) {
