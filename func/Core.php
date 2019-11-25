@@ -31,48 +31,16 @@ class Core
     }
 
     /**
-     * Получить русское название текущей страницы.
+     * Возвращает элементы главного меню как
+     * [
+     *      [
+     *          'title' => *русское_название*,
+     *          'link' => *ссылка*
+     *      ],...
+     * ]
      *
-     * @return bool|false|string
+     * @return array|false|mixed
      */
-    public function getCurrentPageRusName()
-    {
-        $path = $this->pathFromRequest();
-        $name = $this->getRusName($path);
-        return $name;
-    }
-
-    /**
-     * Получаем корень системы + путь полученный из URL.
-     *
-     * @return false|string|null
-     */
-    public function pathFromRequest()
-    {
-        $path = $this->offsetFromRequest();
-        if ($path == '') {
-            return $this->root;
-        } else {
-            return $this->root . DIRECTORY_SEPARATOR . $path;
-        }
-    }
-
-    /**
-     * Получаем путь из URL, при необходимости обрезаем оффсет.
-     * Этот путь нужен для сопоставления пути от корня системы и корня сервера.
-     *
-     * @return mixed|string
-     */
-    public function offsetFromRequest()
-    {
-        if ($this->requestUri == '/') {
-            return '';
-        }
-        $path = str_replace($this->root, '', realpath($this->docRoot . $this->requestUri));
-//        var_dump($path);
-        return $path;
-    }
-
     public function getMainFolders()
     {
         $folders = scandir($this->root);
@@ -82,7 +50,7 @@ class Core
             if (in_array($this->rusName, $checkFolder)) {
                 $folderRusName = file_get_contents("$this->root/$folder/$this->rusName");
                 $folder = [
-                    'rusName' => $folderRusName,
+                    'title' => $folderRusName,
                     'link' => $this->httpUri . $this->offsetPath . '/' . $folder
                 ];
             }
@@ -90,16 +58,20 @@ class Core
         return $folders;
     }
 
-    function str_replace_first($from, $to, $content)
-    {
-        $from = '/' . preg_quote($from, '/') . '/';
-
-        return preg_replace($from, $to, $content, 1);
-    }
-
+    /**
+     * Возвращает элементы навигационного меню как
+     * [
+     *      [
+     *          'title' => *русское_название*,
+     *          'link' => *ссылка*
+     *      ],...
+     *      + элемент с ссылкой на главную
+     * ]
+     *
+     * @return array
+     */
     public function getNavFolders()
     {
-        // todo сделать через строки а не массивы вдруг папки с одним названием
         $itemsRaw = [];
         if ($this->requestUri != '/') {
             $path = str_replace($this->root, '', realpath($this->docRoot . DIRECTORY_SEPARATOR . $this->requestUri));
@@ -126,24 +98,17 @@ class Core
     }
 
     /**
-     * Возвращает русское название из переданного пути.
+     * Возвращает элементы текущего меню как
+     * [
+     *      [
+     *          'title' => *русское_название*,
+     *          'link' => *ссылка*
+     *      ],...
+     *      + элемент с ссылкой на уровень ниже
+     * ]
      *
-     * @param $path
-     * @return bool|false|string
+     * @return array
      */
-    public function getRusName($path)
-    {
-        if (!is_dir($path))
-            return "Без названия";
-        $rusName = false;
-        if (file_exists($path . DIRECTORY_SEPARATOR . $this->rusName))
-            $rusName = file_get_contents($path . DIRECTORY_SEPARATOR . $this->rusName);
-        if ($rusName === false) {
-            return "Без названия";
-        }
-        return $rusName;
-    }
-
     public function getCurrentFolders()
     {
         $path = $this->pathFromRequest();
@@ -164,20 +129,25 @@ class Core
                 $link = $this->httpUri . $this->offsetPath . DIRECTORY_SEPARATOR . $folder;
             }
             $folders[] = [
-                'rusName' => $folderRusName,
+                'title' => $folderRusName,
                 'link' => $link,
             ];
         }
         if ($this->requestUri != '/') {
             if ($uri != $this->offsetPath) {
-                $folders = array_merge([['rusName' => "Назад", 'link' => $this->httpUri . $uri]], $folders);
+                $folders = array_merge([['title' => "Назад", 'link' => $this->httpUri . $uri]], $folders);
             } else {
-                $folders = array_merge([['rusName' => "Назад", 'link' => $this->httpUri . '/']], $folders);
+                $folders = array_merge([['title' => "Назад", 'link' => $this->httpUri . '/']], $folders);
             }
         }
         return $folders;
     }
 
+    /**
+     * Возвращает контент если есть по текущей ссылке.
+     *
+     * @return array
+     */
     public function getContent()
     {
         $check = [];
@@ -191,6 +161,68 @@ class Core
             }
         }
         return $check;
+    }
+
+    /**
+     * Возвращает русское название текущей страницы.
+     *
+     * @return bool|false|string
+     */
+    public function getCurrentPageRusName()
+    {
+        $path = $this->pathFromRequest();
+        $name = $this->getRusName($path);
+        return $name;
+    }
+
+    /**
+     * Возвращает корень системы + путь полученный из URL.
+     *
+     * @return false|string|null
+     */
+    public function pathFromRequest()
+    {
+        $path = $this->offsetFromRequest();
+        if ($path == '') {
+            return $this->root;
+        } else {
+            return $this->root . DIRECTORY_SEPARATOR . $path;
+        }
+    }
+
+    /**
+     * Возвращает путь из URL, при необходимости обрезает оффсет.
+     * Этот путь нужен для сопоставления пути от корня системы и корня сервера.
+     *
+     * @return mixed|string
+     */
+    public function offsetFromRequest()
+    {
+        if ($this->requestUri == '/') {
+            return '';
+        }
+        $path = str_replace($this->root, '', realpath($this->docRoot . $this->requestUri));
+//        var_dump($path);
+        return $path;
+    }
+
+    /**
+     * Возвращает русское название из переданного пути.
+     *
+     * @param $path
+     * @return bool|false|string
+     */
+    public function getRusName($path)
+    {
+        if (!is_dir($path))
+            return "Без названия";
+        $rusName = false;
+        if (file_exists($path . DIRECTORY_SEPARATOR . $this->rusName))
+            $rusName = file_get_contents($path . DIRECTORY_SEPARATOR . $this->rusName);
+        if ($rusName === false) {
+            return "Без названия";
+        }
+        return $rusName;
     }
 
     public function clearFolders($folders, $request = false)
@@ -207,7 +239,7 @@ class Core
     }
 
     /**
-     * Чекает надо ли оторажать папку в меню слева.
+     * Проверяет надо ли оторажать папку в текущем меню.
      * Если переданная директория или ее поддиректории не содержат
      * контента - ответ false.
      *
