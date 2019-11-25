@@ -17,6 +17,8 @@ class Core
     public $httpUri = null;
     private $rusName = 'rusName.txt';
     private $contentName = 'content.html';
+    private $docRoot = null;
+    public $offsetPath = null;
 
     public function __construct()
     {
@@ -24,8 +26,13 @@ class Core
 //        var_dump(DIR_BASE);
 //        var_dump($_SERVER['DOCUMENT_ROOT']);
 //        var_dump(dirname(__FILE__));
-//        var_dump(__DIR__.'/..');
-        $this->root = __DIR__ . '/..';
+        $this->docRoot = realpath($_SERVER['DOCUMENT_ROOT']);
+        $this->root = realpath(__DIR__ . '/..');
+        // todo через вычитание строк а не массивов
+        $docArr = explode(DIRECTORY_SEPARATOR, $this->docRoot);
+        $rootArr = explode(DIRECTORY_SEPARATOR, __DIR__);
+        array_pop($rootArr);
+        $this->offsetPath = implode('/', array_diff($rootArr, $docArr));
         $this->cwd = getcwd();
         $this->folderCfg = (include $this->cfgPath . 'folders.php');
         $this->httpUri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . parse_url($_SERVER['HTTP_HOST'])['path'];
@@ -37,7 +44,15 @@ class Core
 
     public function getCurrentPageRusName()
     {
-        $name = $this->getRusName($this->root.$this->requestUri);
+//        var_dump($this->root);
+        $path = implode(DIRECTORY_SEPARATOR,
+            array_diff(
+                explode(DIRECTORY_SEPARATOR, realpath($this->docRoot . $this->requestUri)),
+                explode(DIRECTORY_SEPARATOR, $this->docRoot),
+                explode(DIRECTORY_SEPARATOR, $this->offsetPath)
+            )
+        ) . '/';
+        $name = $this->getRusName($this->root . '/'. $path);
         return $name;
     }
 
@@ -51,7 +66,7 @@ class Core
                 $folderRusName = file_get_contents("$this->root/$folder/$this->rusName");
                 $folder = [
                     'rusName' => $folderRusName,
-                    'link' => $this->httpUri . "/" . $folder
+                    'link' => $this->httpUri . "/" . $this->offsetPath . '/' . $folder
                 ];
             }
         }
@@ -60,7 +75,9 @@ class Core
 
     public function getNavFolders()
     {
+        // todo сделать через строки а не массивы вдруг папки с одним названием
         $itemsRaw = array_filter(explode('/', $this->requestUri));
+        $itemsRaw = array_diff($itemsRaw, explode(DIRECTORY_SEPARATOR, $this->offsetPath));
         $items = [
             [
                 'title' => 'Главная',
@@ -71,8 +88,8 @@ class Core
         foreach ($itemsRaw as $item) {
             $link[] = $item;
             $items[] = [
-                'title' => $this->getRusName($this->root.'/'.implode('/',$link).'/'),
-                'link' => $this->httpUri . "/" . implode("/", $link),
+                'title' => $this->getRusName($this->root . '/' . implode('/', $link) . '/'),
+                'link' => $this->httpUri . "/" . $this->offsetPath . '/' . implode("/", $link),
             ];
         }
         return $items;
@@ -99,20 +116,33 @@ class Core
 
     public function getCurrentFolders()
     {
-        $scanFolders = scandir($this->root . $this->requestUri);
+        $path = implode(DIRECTORY_SEPARATOR,
+            array_diff(
+                explode(DIRECTORY_SEPARATOR, realpath($this->docRoot . $this->requestUri)),
+                explode(DIRECTORY_SEPARATOR, $this->docRoot),
+                explode(DIRECTORY_SEPARATOR, $this->offsetPath)
+            )
+        );
+        var_dump(realpath($this->docRoot . $this->requestUri));
+        var_dump(realpath($this->docRoot ));
+        var_dump($path);
+        $scanFolders = scandir($this->root . DIRECTORY_SEPARATOR . $path);
         $scanFolders = $this->clearFolders($scanFolders, true);
+        // todo array filter убрать потому что вдруг повторяющиеся папки
         $uri = array_filter(explode('/', $this->requestUri));
         array_pop($uri);
         $uri = implode('/', $uri);
+        var_dump($uri);
         $folders = [];
         foreach ($scanFolders as $folder) {
-            if (!$this->checkSubDir($this->root . $this->requestUri . $folder . '/'))
+            if (!$this->checkSubDir($this->root . '/'.  $path . '/'. $folder . '/'))
                 continue;
 
-            $folderRusName = file_get_contents($this->root . $this->requestUri . $folder . '/' . $this->rusName);
+            $folderRusName = file_get_contents($this->root . '/'.  $path . '/'. $folder . '/' . $this->rusName);
             $folders[] = [
                 'rusName' => $folderRusName,
-                'link' => $this->httpUri . $this->requestUri . $folder,
+                //todo двойные слэши на главной, в целом прибраться тут надо
+                'link' => $this->httpUri . '/' . $this->offsetPath .'/' . $path .'/' . $folder,
             ];
         }
         if ($this->requestUri != '/')
@@ -123,8 +153,16 @@ class Core
     public function getContent()
     {
         $check = [];
-        if (file_exists($this->root . $this->requestUri . $this->contentName)) {
-            if ($fh = fopen($this->root . $this->requestUri . $this->contentName, 'r')) {
+        $path = implode(DIRECTORY_SEPARATOR,
+            array_diff(
+                explode(DIRECTORY_SEPARATOR, realpath($this->docRoot . $this->requestUri)),
+                explode(DIRECTORY_SEPARATOR, $this->docRoot),
+                explode(DIRECTORY_SEPARATOR, $this->offsetPath)
+            )
+        ).'/';
+        var_dump(file_exists($this->root . '/'. $path . $this->contentName));
+        if (file_exists($this->root . '/'. $path . $this->contentName)) {
+            if ($fh = fopen($this->root . '/'. $path . $this->contentName, 'r')) {
                 while (!feof($fh)) {
                     $check[] = fgets($fh);
                 }
@@ -136,10 +174,20 @@ class Core
 
     public function clearFolders($folders, $request = false)
     {
+        $path = implode(DIRECTORY_SEPARATOR,
+                array_diff(
+                    explode(DIRECTORY_SEPARATOR, realpath($this->docRoot . $this->requestUri)),
+                    explode(DIRECTORY_SEPARATOR, $this->docRoot),
+                    explode(DIRECTORY_SEPARATOR, $this->offsetPath)
+                )
+            );
         foreach ($folders as $k => $folder) {
-            if (!$request && !is_dir($this->root . '/' . $folder) || in_array($folder, $this->folderCfg['hide'])) {
+            if (!$request && !is_dir($this->root . $path . $folder) || in_array($folder, $this->folderCfg['hide'])) {
                 unset($folders[$k]);
-            } elseif ($request && !is_dir($this->root . $this->requestUri . $folder) || in_array($folder, $this->folderCfg['hide'])) {
+            } elseif ($request && !is_dir($this->root . '/' . $path . '/' . $folder) || in_array($folder, $this->folderCfg['hide'])) {
+                var_dump(is_dir($this->root  . '/' . $path . '/' . $folder));
+                var_dump($this->root . '/' . $path . '/' . $folder);
+                var_dump(is_dir($this->root . '/' . $path . '/' . $folder));
                 unset($folders[$k]);
             }
         }
@@ -156,6 +204,7 @@ class Core
      */
     public function checkSubDir($path)
     {
+        var_dump($path);
         $toDelete = ['..', '.',
             $this->rusName, 'index.php'];
         $items = scandir($path);
