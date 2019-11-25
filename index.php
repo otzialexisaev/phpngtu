@@ -6,4 +6,4 @@
  * Time: 14:12
  */
 
-require_once "./func/script.php";
+require_once "./news/func/script.php";
