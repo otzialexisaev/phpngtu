@@ -25,7 +25,13 @@ class Designer
         }
     }
 
-    public function getLogoContents()
+    /**
+     * Получение html с лого. $host - http_host для подставления в ссылку.
+     *
+     * @param $host
+     * @return array
+     */
+    public function getLogoContents($host)
     {
 //        src=["|'](.*?)["|']
         $logoBlock = $this->parse($this->html, 'logo');
@@ -33,7 +39,7 @@ class Designer
             preg_match('%src=["|\'](.*?)["|\']%', $row, $check);
             if (!empty($check) && isset($check[1])) {
                 $imgName = $check[1];
-                $row = str_replace($imgName, '/designer/'.$imgName, $row);
+                $row = str_replace($imgName, $host.'/designer/'.$imgName, $row);
                 break;
             }
         }

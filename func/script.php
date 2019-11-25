@@ -20,7 +20,7 @@ $pagename = $core->getCurrentPageRusName();
 $currentMenuItems = $core->getCurrentFolders();
 $contentItem = $core->getContent();
 ////////////////////////////////////////////////////////////////////
-$logoItem = $display->getLogoContents();
+$logoItem = $display->getLogoContents($core->httpUri);
 $head = $display->getHeadContents($pagename);
 $mainMenu = $display->getMainMenuContents($mainMenuItems);
 $navMenu = $display->getNavContents($navMenuItems, $pagename);
