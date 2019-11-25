@@ -31,6 +31,9 @@ class Core
         // todo через вычитание строк а не массивов
         $docArr = explode(DIRECTORY_SEPARATOR, $this->docRoot);
         $rootArr = explode(DIRECTORY_SEPARATOR, __DIR__);
+        var_dump($this->docRoot);
+        var_dump($this->root);
+        var_dump(str_replace($this->docRoot, '', $this->root));
         array_pop($rootArr);
         $this->offsetPath = implode('/', array_diff($rootArr, $docArr));
         $this->cwd = getcwd();
@@ -123,16 +126,16 @@ class Core
                 explode(DIRECTORY_SEPARATOR, $this->offsetPath)
             )
         );
-        var_dump(realpath($this->docRoot . $this->requestUri));
-        var_dump(realpath($this->docRoot ));
-        var_dump($path);
+//        var_dump(realpath($this->docRoot . $this->requestUri));
+//        var_dump(realpath($this->docRoot ));
+//        var_dump($path);
         $scanFolders = scandir($this->root . DIRECTORY_SEPARATOR . $path);
         $scanFolders = $this->clearFolders($scanFolders, true);
         // todo array filter убрать потому что вдруг повторяющиеся папки
         $uri = array_filter(explode('/', $this->requestUri));
         array_pop($uri);
         $uri = implode('/', $uri);
-        var_dump($uri);
+//        var_dump($uri);
         $folders = [];
         foreach ($scanFolders as $folder) {
             if (!$this->checkSubDir($this->root . '/'.  $path . '/'. $folder . '/'))
@@ -160,7 +163,7 @@ class Core
                 explode(DIRECTORY_SEPARATOR, $this->offsetPath)
             )
         ).'/';
-        var_dump(file_exists($this->root . '/'. $path . $this->contentName));
+//        var_dump(file_exists($this->root . '/'. $path . $this->contentName));
         if (file_exists($this->root . '/'. $path . $this->contentName)) {
             if ($fh = fopen($this->root . '/'. $path . $this->contentName, 'r')) {
                 while (!feof($fh)) {
@@ -185,9 +188,9 @@ class Core
             if (!$request && !is_dir($this->root . $path . $folder) || in_array($folder, $this->folderCfg['hide'])) {
                 unset($folders[$k]);
             } elseif ($request && !is_dir($this->root . '/' . $path . '/' . $folder) || in_array($folder, $this->folderCfg['hide'])) {
-                var_dump(is_dir($this->root  . '/' . $path . '/' . $folder));
-                var_dump($this->root . '/' . $path . '/' . $folder);
-                var_dump(is_dir($this->root . '/' . $path . '/' . $folder));
+//                var_dump(is_dir($this->root  . '/' . $path . '/' . $folder));
+//                var_dump($this->root . '/' . $path . '/' . $folder);
+//                var_dump(is_dir($this->root . '/' . $path . '/' . $folder));
                 unset($folders[$k]);
             }
         }
@@ -204,7 +207,7 @@ class Core
      */
     public function checkSubDir($path)
     {
-        var_dump($path);
+//        var_dump($path);
         $toDelete = ['..', '.',
             $this->rusName, 'index.php'];
         $items = scandir($path);
