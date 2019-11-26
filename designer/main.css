@@ -20,24 +20,24 @@
 }
 
 .left {
-    border: 1px solid black;
     flex: 1;
 }
 
 .content {
     flex: 3;
-    border: 1px solid red;
 }
 
 .current-menu-item {
     width: 100%;
     padding: 10px;
     border: 1px solid black;
+    color: black;
     background-color: pink;
     transition-duration: .5s;
 }
 .current-menu-item:hover {
     background-color: darkmagenta;
+    color: white;
 }
 
 body {
@@ -45,3 +45,6 @@ body {
     margin: auto !important;
 }
 /*# sourceMappingURL=bootstrap.min.css.map */
+.menu-link{
+    text-decoration: none !important;
+}
