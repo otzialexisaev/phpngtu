@@ -9,8 +9,8 @@
     padding-left: .5rem !important;
 }
 
-.page-name {
-
+.navbar {
+    border: 1px solid black !important;
 }
 
 .center {

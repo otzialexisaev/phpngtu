@@ -46,7 +46,10 @@ class Core
         $folders = scandir($this->root);
         $folders = $this->clearFolders($folders);
         foreach ($folders as $k => &$folder) {
+            if (!$this->checkSubDir($this->root . '/' . $folder . '/'))
+                unset($folders[$k]);
             $checkFolder = scandir("$this->root/$folder");
+
             if (in_array($this->rusName, $checkFolder)) {
                 $folderRusName = file_get_contents("$this->root/$folder/$this->rusName");
                 $folder = [
