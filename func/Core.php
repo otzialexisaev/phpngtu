@@ -120,7 +120,7 @@ class Core
     {
         $path = $this->pathFromRequest();
         $path = str_replace('//', '/', $path);
-        $path = str_replace('/index.php', '', $path);
+        $path = str_replace(DIRECTORY_SEPARATOR . 'index.php', '', $path);
         $scanFolders = scandir($path);
         $scanFolders = $this->clearFolders($scanFolders, true);
         $uri = array_filter(explode('/', $this->requestUri));
@@ -196,9 +196,9 @@ class Core
     {
         $path = $this->offsetFromRequest();
         if ($path == '') {
-            return str_replace('/index.php','/',$this->root);
+            return str_replace(DIRECTORY_SEPARATOR . 'index.php','/',$this->root);
         } else {
-            return str_replace('/index.php','/',$this->root . DIRECTORY_SEPARATOR . $path);
+            return str_replace(DIRECTORY_SEPARATOR . 'index.php','/',$this->root . DIRECTORY_SEPARATOR . $path);
         }
     }
 
