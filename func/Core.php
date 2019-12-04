@@ -76,10 +76,14 @@ class Core
     public function getNavFolders()
     {
         $itemsRaw = [];
-        if ($this->requestUri != '/') {
+        if ($this->requestUri != '/' && $this->requestUri != '/index.php') {
             $path = str_replace($this->root, '', realpath($this->docRoot . DIRECTORY_SEPARATOR . $this->requestUri));
             $itemsRaw = array_filter(explode(DIRECTORY_SEPARATOR, $path));
-            foreach ($itemsRaw as &$row) {
+            foreach ($itemsRaw as $k => &$row) {
+                if ($row == 'index.php') {
+                    unset($itemsRaw[$k]);
+                    continue;
+                }
                 $row = str_replace(DIRECTORY_SEPARATOR, '', $row);
             }
         }
@@ -115,9 +119,14 @@ class Core
     public function getCurrentFolders()
     {
         $path = $this->pathFromRequest();
+        $path = str_replace('//', '/', $path);
+        $path = str_replace('/index.php', '', $path);
         $scanFolders = scandir($path);
         $scanFolders = $this->clearFolders($scanFolders, true);
         $uri = array_filter(explode('/', $this->requestUri));
+        if (($key = array_search('index.php', $uri)) !== false) {
+            unset($uri[$key]);
+        }
         array_pop($uri);
         $uri = DIRECTORY_SEPARATOR . implode('/', $uri);
         $folders = [];
@@ -126,8 +135,8 @@ class Core
                 continue;
 
             $folderRusName = file_get_contents($path . '/' . $folder . '/' . $this->rusName);
-            if ($this->requestUri != '/') {
-                $link = $this->httpUri . $this->requestUri . $folder;
+            if ($this->requestUri != '/' && $this->requestUri != '/index.php') {
+                $link = $this->httpUri . str_replace('index.php','',$this->requestUri) . $folder;
             } else {
                 $link = $this->httpUri . $this->offsetPath . DIRECTORY_SEPARATOR . $folder;
             }
@@ -136,7 +145,7 @@ class Core
                 'link' => $link,
             ];
         }
-        if ($this->requestUri != '/') {
+        if ($this->requestUri != '/' && $this->requestUri != '/index.php') {
             if ($uri != $this->offsetPath) {
                 $folders = array_merge([['title' => "Назад", 'link' => $this->httpUri . $uri]], $folders);
             } else {
@@ -187,9 +196,9 @@ class Core
     {
         $path = $this->offsetFromRequest();
         if ($path == '') {
-            return $this->root;
+            return str_replace('/index.php','/',$this->root);
         } else {
-            return $this->root . DIRECTORY_SEPARATOR . $path;
+            return str_replace('/index.php','/',$this->root . DIRECTORY_SEPARATOR . $path);
         }
     }
 
@@ -201,7 +210,7 @@ class Core
      */
     public function offsetFromRequest()
     {
-        if ($this->requestUri == '/') {
+        if ($this->requestUri == '/' || $this->requestUri == '/index.php') {
             return '';
         }
         $path = str_replace($this->root, '', realpath($this->docRoot . $this->requestUri));

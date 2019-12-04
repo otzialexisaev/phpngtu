@@ -14,7 +14,7 @@ class Designer
     {
         // получаем хтмльку для парсинга, если там будет не хтмлька то наверное наступит смерть
         // парсинг точно полетит
-        if ($fh = fopen(__DIR__ . '\main.html', 'r')) {
+        if ($fh = fopen(__DIR__ . DIRECTORY_SEPARATOR . 'main.html', 'r')) {
             while (!feof($fh)) {
                 $this->html[] = fgets($fh);
             }
